@@ -50,7 +50,9 @@ stages:
                     cat $(Build.SourcesDirectory)/k8s/$dir/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
                     echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
                 done
-
+                
+                sed -i 's|image: .*|image: $(containerRegistry)/$(imageRepository):$(tag)|g' $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                
                 # Display the contents of the combined file (for debugging)
                 cat $(Build.ArtifactStagingDirectory)/combined-manifest.yml
 
