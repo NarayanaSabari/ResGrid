@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: communication-service # Container name, usually the same as the service
-        image: drcscr.azurecr.io/communication:latest # Replace with the Docker image for this microservice
+        image: drcscr.azurecr.io/communication:#{Build.BuildId}#
         ports:
         - containerPort: 5000  # Port your microservice is running on
         env:

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: resource-allocation-service # Container name, usually the same as the service
-        image: drcscr.azurecr.io/resource:latest # Replace with the Docker image for this microservice
+        image: drcscr.azurecr.io/resource:#{Build.BuildId}#  # Replace with the Docker image for this microservice
         ports:
         - containerPort: 5000  # Port your microservice is running on
         env:
