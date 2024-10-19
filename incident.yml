@@ -4,16 +4,31 @@
 # https://aka.ms/yaml
 
 trigger:
-- Incident-report-service
+  branches:
+    include:
+      - Incident-report-service
+
+variables:
+  # Docker Configuration
+  serviceName: 'incident_reporting'
+  dockerfilePath: '$(Build.SourcesDirectory)/services/$(serviceName)/Dockerfile'  # Path to the Dockerfile in the source directory
+  imageRepository: 'incident'                              # Name of the image repository
+  containerRegistry: 'drcscr.azurecr.io'    # URL of the Azure Container Registry
+  dockerRegistryServiceConnection: 'DRCSCR'                # Service connection for Docker Registry
+  
+  # Build Metadata
+  tag: '$(Build.BuildId)'                                  # Tag for the Docker image based on the build ID
 
 pool:
   name: Default
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - task: Docker@2
+    inputs:
+      containerRegistry: '$(dockerRegistryServiceConnection)'
+      repository: '$(containerRegistry)/$(imageRepository)'  # Correcting the repository path
+      command: 'buildAndPush'
+      Dockerfile: '$(dockerfilePath)'                        # Use variable for Dockerfile path
+      tags: |
+        $(tag)
+        latest
