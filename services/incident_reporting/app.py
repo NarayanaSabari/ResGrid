@@ -1,10 +1,35 @@
-from flask import Flask
+from flask import Flask, request, jsonify
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 app = Flask(__name__)
 
+cred = credentials.Certificate('../resgrid-2024-firebase-adminsdk-fxhn2-e934047e3f.json')
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
 @app.route('/')
 def home():
-    return "Hello, World! Welcome to my Flask app! Incident Reporting"
+    return "Welcome to the Incident Reporting Service!"
+
+@app.route('/report', methods=['POST'])
+def report():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    
+    required_fields = ['incident_type', 'location', 'description']
+    
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field: {field}"}), 400
+
+    reports_ref = db.collection('incident_reports')  
+    reports_ref.add(data) 
+
+    return jsonify({"message": "Report received", "data": data}), 201
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
