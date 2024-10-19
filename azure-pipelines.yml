@@ -13,6 +13,7 @@ variables:
 
 pool:
   name: Default
+  clean: all
 
 stages:
 - stage: DeployToAKS
@@ -25,6 +26,7 @@ stages:
       runOnce:
         deploy:
           steps:
+          - checkout: self
           - task: Bash@3
             displayName: 'Combine deployment and service YAML files'
             inputs:
