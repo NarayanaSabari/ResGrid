@@ -9,5 +9,5 @@ spec:
     - protocol: TCP
       port: 5005  # Port for external access
       targetPort: 5000  # Port where the app is running in the container
-  type: LoadBalancer  # Use LoadBalancer if you want to expose it externally
+  type: ClusterIP  # Use LoadBalancer if you want to expose it externally
 ---
