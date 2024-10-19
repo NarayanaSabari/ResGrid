@@ -6,13 +6,13 @@
 trigger:
   branches:
     include:
-      - Incident-report-service
+      - severity
 
 variables:
   # Docker Configuration
-  serviceName: 'incident_reporting'
+  serviceName: 'severity_assessment'
   dockerfilePath: '$(Build.SourcesDirectory)/services/$(serviceName)/Dockerfile'  # Path to the Dockerfile in the source directory
-  imageRepository: 'incident'                              # Name of the image repository
+  imageRepository: 'severity'                              # Name of the image repository
   containerRegistry: 'drcscr.azurecr.io'    # URL of the Azure Container Registry
   dockerRegistryServiceConnection: 'DRCSCR'                # Service connection for Docker Registry
   
