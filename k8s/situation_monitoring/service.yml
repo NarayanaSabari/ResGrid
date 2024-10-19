@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: situationMonitoringService-service # Change to your microservice name
+  name: situation-monitoring-service-service # Change to your microservice name
 spec:
   selector:
-    app: situationMonitoringService  # This must match the app label in the Deployment
+    app: situation-monitoring-service  # This must match the app label in the Deployment
   ports:
     - protocol: TCP
       port: 5005  # Port for external access

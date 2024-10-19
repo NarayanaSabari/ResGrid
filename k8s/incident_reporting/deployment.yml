@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: incidentReportingService  # Change to your microservice name
+  name: incident-reporting-service  # Change to your microservice name
   labels:
-    app: incidentReportingService  # Same name here
+    app: incident-reporting-service  # Same name here
 spec:
   replicas: 1  # Number of pod replicas
   selector:
     matchLabels:
-      app: incidentReportingService  # Same name as above
+      app: incident-reporting-service  # Same name as above
   template:
     metadata:
       labels:
-        app: incidentReportingService # Same name as above
+        app: incident-reporting-service # Same name as above
     spec:
       containers:
-      - name: incidentReportingService # Container name, usually the same as the service
+      - name: incident-reporting-service # Container name, usually the same as the service
         image: drcscr.azurecr.io/incident:latest # Replace with the Docker image for this microservice
         ports:
         - containerPort: 5000  # Port your microservice is running on
