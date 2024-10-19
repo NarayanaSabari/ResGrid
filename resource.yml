@@ -15,6 +15,8 @@ variables:
   imageRepository: 'resource'                              # Name of the image repository
   containerRegistry: 'drcscr.azurecr.io'    # URL of the Azure Container Registry
   dockerRegistryServiceConnection: 'DRCSCR'                # Service connection for Docker Registry
+  subscriptionId: 'bc7270c6-c2c8-4ed5-82db-e53a4eac19f2'
+  azureRMServiceConnection: 'azureRMService'  # Service connection for Azure
   
   # Build Metadata
   tag: '$(Build.BuildId)'                                  # Tag for the Docker image based on the build ID
@@ -32,3 +34,12 @@ steps:
       tags: |
         $(tag)
         latest
+    # Step 11: Verify that the image exists in Azure Container Registry
+  - task: AzureCLI@2
+    displayName: 'Verify Image in ACR'
+    inputs:
+      azureSubscription: $(azureRMServiceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr repository show-tags --name $(containerRegistry) --repository $(imageRepository) --output table --subscription $(subscriptionId)
