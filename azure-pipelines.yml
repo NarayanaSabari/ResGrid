@@ -1,4 +1,5 @@
 trigger:
   branches:
     include:
-      - main  # Replace with the branch you want to track
+      - main
+      - Incident-report-service
