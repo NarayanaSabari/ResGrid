@@ -44,12 +44,25 @@ stages:
                 mkdir -p $(Build.ArtifactStagingDirectory)
 
                 # Combine the files
-                for dir in communication incident_reporting resource_allocation severity_assessment situation_monitoring; do
-                    cat $(Build.SourcesDirectory)/k8s/$dir/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                    echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                    cat $(Build.SourcesDirectory)/k8s/$dir/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                    echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                done
+                cat $(Build.SourcesDirectory)/k8s/communication/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/incident_reporting/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/resource_allocation/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/severity_assessment/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/situation_monitoring/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/communication/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/incident_reporting/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/resource_allocation/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/severity_assessment/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/situation_monitoring/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
                 
                 sed -i 's|image: .*|image: $(containerRegistry)/$(imageRepository):$(tag)|g' $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
                 
