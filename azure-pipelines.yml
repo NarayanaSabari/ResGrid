@@ -3,12 +3,86 @@ trigger:
     include:
       - main
 
+variables:
+  containerRegistry: 'drcscr.azurecr.io'  # ACR URL
+  k8sServiceConnection: 'DRCSCluster'  # Service connection for AKS
+  azureRMServiceConnection: 'azureRMService'  # Service connection for Azure
+  aksCluster: 'drcsCluster'                  # AKS cluster name
+  resourceGroup: 'DRCS'            # Resource group for AKS
+  namespace: 'default'                              # Kubernetes namespace to deploy to
+
 pool:
   name: Default
 
-steps:
-  - script: echo "Building the project..."
-    displayName: "Build step"
+stages:
+- stage: DeployToAKS
+  displayName: 'Deploy to AKS'
+  jobs:
+  - deployment: DeployToAKS
+    displayName: 'Deploy to AKS'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Bash@3
+            displayName: 'Combine deployment and service YAML files'
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Ensure the directory exists
+                mkdir -p $(Build.ArtifactStagingDirectory)
+                
+                # Combine the files
+                cat $(Build.SourcesDirectory)/k8s/communication/deployment.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/incident_reporting/deployment.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/resource_allocation/deployment.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/severity_assessment/deployment.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/situation_monitoring/deployment.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
 
-  - script: echo "Running tests..."
-    displayName: "Test step"
+                cat $(Build.SourcesDirectory)/k8s/communication/service.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/incident_reporting/service.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/resource_allocation/service.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/severity_assessment/service.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+                cat $(Build.SourcesDirectory)/k8s/situation_monitoring/service.yaml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+
+                # Display the contents of the combined file (for debugging)
+                cat $(Build.ArtifactStagingDirectory)/combined-manifest.yaml
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: '$(k8sServiceConnection)'
+              namespace: '$(namespace)'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Build.ArtifactStagingDirectory)/combined-manifest.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              azureSubscriptionEndpointForSecrets: '$(azureRMServiceConnection)'
+              azureContainerRegistry: '$(containerRegistry)'
+
+          - task: Kubernetes@1
+            displayName: 'Verify Deployment'
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscriptionEndpoint: '$(azureRMServiceConnection)'
+              azureResourceGroup: '$(resourceGroup)'
+              kubernetesCluster: '$(aksCluster)'
+              namespace: '$(namespace)'
+              command: 'get'
+              arguments: 'pods'
+
+          - script: |
+              echo "Application deployed to AKS cluster $(aksCluster)"
+              kubectl get svc -n $(namespace); echo "Check your public IP above."
+            displayName: 'Print Deployment Info'
