@@ -2,13 +2,86 @@ trigger:
   branches:
     include:
       - main
+pr:
+  branches:
+    include:
+      - '*'
+
+variables:
+  containerRegistry: 'drcscr.azurecr.io'  # ACR URL
+  k8sServiceConnection: 'DRCSCluster'  # Service connection for AKS
+  azureRMServiceConnection: 'azureRMService'  # Service connection for Azure
+  aksCluster: 'drcsCluster'                  # AKS cluster name
+  resourceGroup: 'DRCS'            # Resource group for AKS
+  namespace: 'default'                              # Kubernetes namespace to deploy to
 
 pool:
   name: Default
+  clean: all
 
-steps:
-  - script: echo "Building the project..."
-    displayName: "Build step"
+stages:
+- stage: DeployToAKS
+  displayName: 'Deploy to AKS'
+  jobs:
+  - deployment: DeployToAKS
+    displayName: 'Deploy to AKS'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+            persistCredentials: true
+            
+          - task: Bash@3
+            displayName: 'Combine deployment and service YAML files'
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -e  # Exit immediately if a command exits with a non-zero status
 
-  - script: echo "Running tests..."
-    displayName: "Test step"
+                # Ensure the directory exists
+                mkdir -p $(Build.ArtifactStagingDirectory)
+
+                # Combine the files and add new lines between them
+                for file in communication incident_reporting resource_allocation severity_assessment situation_monitoring; do
+                    cat $(Build.SourcesDirectory)/k8s/$file/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                    echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                    cat $(Build.SourcesDirectory)/k8s/$file/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                    echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                done
+
+                # Display the contents of the combined file (for debugging)
+                cat $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+
+             
+                
+#
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: '$(k8sServiceConnection)'
+              namespace: '$(namespace)'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Build.ArtifactStagingDirectory)/combined-manifest.yml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              azureSubscriptionEndpointForSecrets: '$(azureRMServiceConnection)'
+              azureContainerRegistry: '$(containerRegistry)'
+
+          - task: Kubernetes@1
+            displayName: 'Verify Deployment'
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscriptionEndpoint: '$(azureRMServiceConnection)'
+              azureResourceGroup: '$(resourceGroup)'
+              kubernetesCluster: '$(aksCluster)'
+              namespace: '$(namespace)'
+              command: 'get'
+              arguments: 'pods'
+
+          - script: |
+              echo "Application deployed to AKS cluster $(aksCluster)"
+              kubectl get svc -n $(namespace); echo "Check your public IP above."
+            displayName: 'Print Deployment Info'

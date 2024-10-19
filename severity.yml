@@ -1,0 +1,34 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - severity
+
+variables:
+  # Docker Configuration
+  serviceName: 'severity_assessment'
+  dockerfilePath: '$(Build.SourcesDirectory)/services/$(serviceName)/Dockerfile'  # Path to the Dockerfile in the source directory
+  imageRepository: 'severity'                              # Name of the image repository
+  containerRegistry: 'drcscr.azurecr.io'    # URL of the Azure Container Registry
+  dockerRegistryServiceConnection: 'DRCSCR'                # Service connection for Docker Registry
+  
+  # Build Metadata
+  tag: '$(Build.BuildId)'                                  # Tag for the Docker image based on the build ID
+
+pool:
+  name: Default
+
+steps:
+  - task: Docker@2
+    inputs:
+      containerRegistry: '$(dockerRegistryServiceConnection)'
+      repository: '$(containerRegistry)/$(imageRepository)'  # Correcting the repository path
+      command: 'buildAndPush'
+      Dockerfile: '$(dockerfilePath)'                        # Use variable for Dockerfile path
+      tags: |
+        $(tag)
+        latest
