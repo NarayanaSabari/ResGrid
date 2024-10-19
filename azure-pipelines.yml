@@ -3,3 +3,13 @@ trigger:
     include:
       - main
       - Incident-report-service
+
+pool:
+  name: Default
+
+steps:
+  - script: echo "Building the project..."
+    displayName: "Build step"
+
+  - script: echo "Running tests..."
+    displayName: "Test step"
