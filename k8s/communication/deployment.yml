@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-service  # Change to your microservice name
+  labels:
+    app: communication-service  # Same name here
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: communication-service  # Same name as above
+  template:
+    metadata:
+      labels:
+        app: communication-service # Same name as above
+    spec:
+      containers:
+      - name: communication-service # Container name, usually the same as the service
+        image: drcscr.azurecr.io/communication:latest # Replace with the Docker image for this microservice
+        ports:
+        - containerPort: 5000  # Port your microservice is running on
+        env:
+#        - name: ENV_VAR_NAME  # Optional environment variables
+#          value: ENV_VAR_VALUE
+---
