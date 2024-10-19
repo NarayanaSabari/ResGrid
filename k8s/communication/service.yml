@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: communicationService-service # Change to your microservice name
+spec:
+  selector:
+    app: communicationService  # This must match the app label in the Deployment
+  ports:
+    - protocol: TCP
+      port: 5001  # Port for external access
+      targetPort: 5000  # Port where the app is running in the container
+  type: LoadBalancer  # Use LoadBalancer if you want to expose it externally
+---
