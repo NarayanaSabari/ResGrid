@@ -54,13 +54,9 @@ stages:
                 # Display the contents of the combined file (for debugging)
                 cat $(Build.ArtifactStagingDirectory)/combined-manifest.yml
 
-                # Check if the combined file exists before running sed
-                if [ -f $(Build.ArtifactStagingDirectory)/combined-manifest.yml ]; then
-                    sed -i 's|image: .*|image: $(containerRegistry)/$(imageRepository):$(tag)|g' $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                else
-                    echo "Error: combined-manifest.yml does not exist."
-                    exit 1  # Exit with error if file is not found
-                fi
+             
+                
+#
           - task: Kubernetes@1
             inputs:
               connectionType: 'Kubernetes Service Connection'
