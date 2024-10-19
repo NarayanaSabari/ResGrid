@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /communication
+        pathType: Prefix
+        backend:
+          service:
+            name: communication-service-service
+            port:
+              number: 5001
+      - path: /incident-reporting
+        pathType: Prefix
+        backend:
+          service:
+            name: incident-reporting-service-service
+            port:
+              number: 5002
+      - path: /resource-allocation
+        pathType: Prefix
+        backend:
+          service:
+            name: resource-allocation-service-service
+            port:
+              number: 5003
+      - path: /severity-assessment
+        pathType: Prefix
+        backend:
+          service:
+            name: severity-assessment-service-service
+            port:
+              number: 5004
+      - path: /situation-monitoring
+        pathType: Prefix
+        backend:
+          service:
+            name: situation-monitoring-service-service
+            port:
+              number: 5005
+---
