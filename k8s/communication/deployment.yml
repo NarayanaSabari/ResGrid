@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: communication-service # Container name, usually the same as the service
-        image: sabarinarayana/communicaiton:latest
+        image: sabarinarayana/communication:latest
         ports:
         - containerPort: 5000  # Port your microservice is running on
         livenessProbe:
