@@ -116,12 +116,12 @@ def home():
 def allocate():
     data  = request.get_json()
 
-    document_id = data["document_id"]
-    reports_ref = db.collection('incident_reports')
-    report = reports_ref.document(document_id)
-    doc = report.get()
-    data = doc.to_dict()
-    type = data.get('incident_type')
+    # document_id = data["document_id"]
+    # reports_ref = db.collection('incident_reports')
+    # report = reports_ref.document(document_id)
+    # doc = report.get()
+    # data = doc.to_dict()
+    type = "Forest fire"
     ans=identify_emergency_services(type)
     return jsonify(services=ans)
 
