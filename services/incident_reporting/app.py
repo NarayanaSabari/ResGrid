@@ -5,14 +5,16 @@ import os
 
 app = Flask(__name__)
 
-# Path to the service account key file
-service_account_key_path = 'serviceAccountKey.json'
+# Function to load the JSON file
+def load_json_file(filepath):
+    with open(filepath) as f:
+        return json.load(f)
 
-# Check if the service account key file exists
-if not os.path.exists(service_account_key_path):
-    raise FileNotFoundError(f"Service account key file not found: {service_account_key_path}")
+# Load JSON configuration
+json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
+config = load_json_file(json_file)
 
-cred = credentials.Certificate(service_account_key_path)
+cred = credentials.Certificate(config['firebase'])
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
