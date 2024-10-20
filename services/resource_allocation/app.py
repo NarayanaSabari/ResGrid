@@ -93,7 +93,7 @@ def identify_emergency_services(scenario):
 
 app = Flask(__name__)
 
-cred = credentials.Certificate('../resgrid-2024-firebase-adminsdk-fxhn2-e934047e3f.json')
+cred = credentials.Certificate('./serviceAccountKey.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
