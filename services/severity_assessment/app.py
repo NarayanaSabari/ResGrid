@@ -74,7 +74,7 @@ def detect_severity():
     data = request.get_json()
     app.logger.info(f"Received data: {data}")
 
-    disaster_type = data['type']
+    disaster_type = data['incident_type']
     description = data['description']
     severity_level = 'unknown'
 
