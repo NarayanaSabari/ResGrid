@@ -6,7 +6,6 @@ pr:
   branches:
     include:
       - '*'
-
 variables:
   dockerHubUsername: 'sabarinarayana'  # Replace with your Docker Hub username
   dockerRegistry: 'DockerHubDRCS'
@@ -41,7 +40,7 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRegistry)'
-        command: 'buildAndPush'
+        command: 'build'
         repository: '$(dockerHubUsername)/communication'
         dockerfile: '$(Build.SourcesDirectory)/services/communication/Dockerfile'
         tags: |
@@ -49,13 +48,23 @@ stages:
           latest
         buildContext: '$(Build.SourcesDirectory)/services/communication'
         arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
-      displayName: 'Build and Push Communication Image'
+      displayName: 'Build Communication Image'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistry)'
+        command: 'push'
+        repository: '$(dockerHubUsername)/communication'
+        tags: |
+          $(Build.BuildId)
+          latest
+      displayName: 'Push Communication Image'
 
     # Incident Reporting Service
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRegistry)'
-        command: 'buildAndPush'
+        command: 'build'
         repository: '$(dockerHubUsername)/incident_reporting'
         dockerfile: '$(Build.SourcesDirectory)/services/incident_reporting/Dockerfile'
         tags: |
@@ -63,13 +72,23 @@ stages:
           latest
         buildContext: '$(Build.SourcesDirectory)/services/incident_reporting'
         arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
-      displayName: 'Build and Push Incident Reporting Image'
+      displayName: 'Build Incident Reporting Image'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistry)'
+        command: 'push'
+        repository: '$(dockerHubUsername)/incident_reporting'
+        tags: |
+          $(Build.BuildId)
+          latest
+      displayName: 'Push Incident Reporting Image'
 
     # Resource Allocation Service
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRegistry)'
-        command: 'buildAndPush'
+        command: 'build'
         repository: '$(dockerHubUsername)/resource_allocation'
         dockerfile: '$(Build.SourcesDirectory)/services/resource_allocation/Dockerfile'
         tags: |
@@ -77,13 +96,23 @@ stages:
           latest
         buildContext: '$(Build.SourcesDirectory)/services/resource_allocation'
         arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
-      displayName: 'Build and Push Resource Allocation Image'
+      displayName: 'Build Resource Allocation Image'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistry)'
+        command: 'push'
+        repository: '$(dockerHubUsername)/resource_allocation'
+        tags: |
+          $(Build.BuildId)
+          latest
+      displayName: 'Push Resource Allocation Image'
 
     # Severity Assessment Service
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRegistry)'
-        command: 'buildAndPush'
+        command: 'build'
         repository: '$(dockerHubUsername)/severity_assessment'
         dockerfile: '$(Build.SourcesDirectory)/services/severity_assessment/Dockerfile'
         tags: |
@@ -91,13 +120,23 @@ stages:
           latest
         buildContext: '$(Build.SourcesDirectory)/services/severity_assessment'
         arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
-      displayName: 'Build and Push Severity Assessment Image'
+      displayName: 'Build Severity Assessment Image'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistry)'
+        command: 'push'
+        repository: '$(dockerHubUsername)/severity_assessment'
+        tags: |
+          $(Build.BuildId)
+          latest
+      displayName: 'Push Severity Assessment Image'
 
     # Situation Monitoring Service
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRegistry)'
-        command: 'buildAndPush'
+        command: 'build'
         repository: '$(dockerHubUsername)/situation_monitoring'
         dockerfile: '$(Build.SourcesDirectory)/services/situation_monitoring/Dockerfile'
         tags: |
@@ -105,4 +144,14 @@ stages:
           latest
         buildContext: '$(Build.SourcesDirectory)/services/situation_monitoring'
         arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
-      displayName: 'Build and Push Situation Monitoring Image'
+      displayName: 'Build Situation Monitoring Image'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistry)'
+        command: 'push'
+        repository: '$(dockerHubUsername)/situation_monitoring'
+        tags: |
+          $(Build.BuildId)
+          latest
+      displayName: 'Push Situation Monitoring Image'
