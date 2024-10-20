@@ -4,6 +4,7 @@ from firebase_admin import credentials, firestore
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+import os
 
 nltk.download('punkt_tab')
 nltk.download('stopwords')
