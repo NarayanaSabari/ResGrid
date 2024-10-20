@@ -116,7 +116,7 @@ def home():
 def allocate():
     data  = request.get_json()
 
-    document_id = data.document_id
+    document_id = data["document_id"]
     reports_ref = db.collection('incident_reports')
     report = reports_ref.document(document_id)
     ans=identify_emergency_services(report)
