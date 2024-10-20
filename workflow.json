@@ -1,0 +1,183 @@
+{
+  "createTime": 1729399696758,
+  "updateTime": 1729400949358,
+  "name": "incident_management_workflow",
+  "description": "Workflow to handle incident reporting, resource allocation, severity assessment, and communication",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "incident_reporting",
+      "taskReferenceName": "reportIncident",
+      "inputParameters": {
+        "http_request": {
+          "method": "POST",
+          "vipAddress": "incident-reporting-service.com",
+          "uri": "74.225.153.30/report",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "incident_type": "${workflow.input.incident_type}",
+            "location": "${workflow.input.location}",
+            "description": "${workflow.input.description}"
+          }
+        }
+      },
+      "type": "HTTP",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "parallel_tasks",
+      "taskReferenceName": "parallelFork",
+      "inputParameters": {},
+      "type": "FORK_JOIN",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [
+        [
+          {
+            "name": "resource_allocation",
+            "taskReferenceName": "allocateResources",
+            "inputParameters": {
+              "http_request": {
+                "method": "POST",
+                "vipAddress": "resource-allocation-service.com",
+                "uri": "74.225.152.243/allocate",
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "document_id": "${reportIncident.output.body.document_id}"
+                }
+              }
+            },
+            "type": "HTTP",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          }
+        ],
+        [
+          {
+            "name": "severity_assessment",
+            "taskReferenceName": "assessSeverity",
+            "inputParameters": {
+              "http_request": {
+                "method": "POST",
+                "vipAddress": "severity-assessment-service.com",
+                "uri": "74.225.155.167/detect_severity",
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "incidentData": "${reportIncident.output.body.data}",
+                  "type": "${reportIncident.output.body.type}",
+                  "description": "${reportIncident.output.body.description}"
+                }
+              }
+            },
+            "type": "HTTP",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          }
+        ]
+      ],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "join_parallel_tasks",
+      "taskReferenceName": "joinFork",
+      "inputParameters": {},
+      "type": "JOIN",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [
+        "allocateResources",
+        "assessSeverity"
+      ],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "communication",
+      "taskReferenceName": "communicate",
+      "inputParameters": {
+        "http_request": {
+          "method": "POST",
+          "vipAddress": "communication-service.com",
+          "uri": "40.126.225.166/broadcast",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "services": "${allocateResources.output.body.services}",
+            "severity": "${assessSeverity.output.body.severity}"
+          }
+        }
+      },
+      "type": "HTTP",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {},
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "kavinsai88@gmail.com",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "inputTemplate": {},
+  "enforceSchema": true
+}
