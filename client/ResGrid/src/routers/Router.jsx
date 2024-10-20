@@ -1,13 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import DisasterReportForm from "./components/DisasterReportForm";
-// import ResourceAllocationPage from "./ResourceAllocationPage"; // Adjust the path as necessary
-// import MonitoringPage from "./MonitoringPage";
-import DisasterInfoPage from "./components/DisasterInfoPage";
-import Home from "./components/HomePage";// Import your Disaster Info Page
-import "./App.css";
+import DisasterReportForm from "../components/DisasterReportForm"; 
+import DisasterInfoPage from "../components/DisasterInfoPage";
+import Home from "../components/HomePage"; 
+import "../App.css"
 
 
-function App() {
+function AppRouter() {
   return (
     <Router>
       <Routes>
@@ -18,10 +16,10 @@ function App() {
         /> */}
         <Route path="/report" element={<DisasterReportForm />} />
         <Route path="/disaster-info" element={<DisasterInfoPage />} />
-      
+        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </Router>
   );
 }
 
-export default App;
+export default AppRouter;
