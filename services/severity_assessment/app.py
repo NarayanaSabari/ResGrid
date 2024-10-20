@@ -65,9 +65,9 @@ severity_rules = {
     }
 }
 
-@app.route('/', methods=['GET'])
-def ping():
-    return jsonify({"message": "Server is working!"})
+@app.route('/')
+def home():
+    return "Welcome to the Incident Reporting Service!"
 
 @app.route('/detect_severity', methods=['POST'])
 def detect_severity():
