@@ -7,7 +7,7 @@ spec:
     app: communication-service  # This must match the app label in the Deployment
   ports:
     - protocol: TCP
-      port: 5001  # Port for external access
+      port: 80  # Port for external access
       targetPort: 5000  # Port where the app is running in the container
   type: ClusterIP  # Use LoadBalancer if you want to expose it externally
 ---
