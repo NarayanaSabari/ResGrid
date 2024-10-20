@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AlertTriangle, MapPin, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const DisasterReportForm = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ const DisasterReportForm = () => {
     peopleAffected: "",
   });
 
+
+  const navigate = useNavigate(); // Initialize useNavigate
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -27,6 +30,8 @@ const DisasterReportForm = () => {
       peopleAffected: "",
     });
     alert("Report submitted successfully!");
+    navigate("/disaster-info");
+
   };
 
   return (
