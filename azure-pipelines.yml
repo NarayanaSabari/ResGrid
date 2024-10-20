@@ -52,6 +52,8 @@ stages:
                 done
                 cat $(Build.SourcesDirectory)/k8s/ingres.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
                 echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                cat $(Build.SourcesDirectory)/k8s/nginx-ingress-loadbalancer.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
+                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
 
                 # Display the contents of the combined file (for debugging)
                 cat $(Build.ArtifactStagingDirectory)/combined-manifest.yml
