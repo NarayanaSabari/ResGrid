@@ -15,7 +15,7 @@ spec:
           service:
             name: communication-service-service
             port:
-              number: 5001
+              number: 80
       - path: /incident-reporting
         pathType: Prefix
         backend:
