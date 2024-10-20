@@ -8,14 +8,12 @@ import {
   Twitter,
   Instagram,
 } from "lucide-react";
+
 import { Link } from "react-router-dom";
-
-
 const Home = () => {
+  const [showReportForm, setShowReportForm] = useState(false); 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAboutVisible, setIsAboutVisible] = useState(false);
-
- 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,8 +27,6 @@ const Home = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

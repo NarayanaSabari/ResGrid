@@ -52,7 +52,6 @@ stages:
         tags: |
           $(Build.BuildId)
           latest
-
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRpo)'
@@ -63,7 +62,6 @@ stages:
         tags: |
           $(Build.BuildId)
           latest
-
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRpo)'
@@ -74,7 +72,6 @@ stages:
         tags: |
           $(Build.BuildId)
           latest
-
     - task: Docker@2
       inputs:
         containerRegistry: '$(dockerRpo)'

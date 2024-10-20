@@ -1,17 +1,21 @@
 from flask import Flask, request, jsonify
 import firebase_admin
 from firebase_admin import credentials, firestore
+import os
+import json
 
 app = Flask(__name__)
 
-# Path to the service account key file
-service_account_key_path = 'serviceAccountKey.json'
+# Function to load the JSON file
+def load_json_file(filepath):
+    with open(filepath) as f:
+        return json.load(f)
 
-# Check if the service account key file exists
-if not os.path.exists(service_account_key_path):
-    raise FileNotFoundError(f"Service account key file not found: {service_account_key_path}")
+# Load JSON configuration
+json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
+config = load_json_file(json_file)
 
-cred = credentials.Certificate(service_account_key_path)
+cred = credentials.Certificate(config['firebase'])
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -26,7 +30,7 @@ def report():
 
     if not data:
         return jsonify({"error": "No data provided"}), 400
-    
+
     required_fields = ['incident_type', 'location', 'description']
     
     for field in required_fields:
@@ -41,7 +45,7 @@ def report():
     # Get the document_id of the newly added document
     document_id = new_report_ref[1].id  # new_report_ref is a tuple (time, doc_ref)
     
-    return jsonify({"message": "Report received", "document_id": document_id, "data": data}), 201
+    return jsonify({"message": "Report received", "document_id": document_id, "type": data['incident_type'], "description": data['description']}), 201
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -65,13 +65,16 @@ severity_rules = {
     }
 }
 
+@app.route('/')
+def home():
+    return "Welcome to the Incident Reporting Service!"
 
 @app.route('/detect_severity', methods=['POST'])
 def detect_severity():
     data = request.get_json()
     app.logger.info(f"Received data: {data}")
 
-    disaster_type = data['type']
+    disaster_type = data['incident_type']
     description = data['description']
     severity_level = 'unknown'
 
@@ -97,4 +100,4 @@ def detect_severity():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

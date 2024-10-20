@@ -4,6 +4,8 @@ from firebase_admin import credentials, firestore
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+import os
+import json
 
 nltk.download('punkt_tab')
 nltk.download('stopwords')
@@ -93,14 +95,15 @@ def identify_emergency_services(scenario):
 
 app = Flask(__name__)
 
-# Path to the service account key file
-service_account_key_path = 'serviceAccountKey.json'
+def load_json_file(filepath):
+    with open(filepath) as f:
+        return json.load(f)
 
-# Check if the service account key file exists
-if not os.path.exists(service_account_key_path):
-    raise FileNotFoundError(f"Service account key file not found: {service_account_key_path}")
+# Load JSON configuration
+json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
+config = load_json_file(json_file)
 
-cred = credentials.Certificate(service_account_key_path)
+cred = credentials.Certificate(config['firebase'])
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -113,7 +116,7 @@ def home():
 def allocate():
     data  = request.get_json()
 
-    document_id = data.document_id
+    document_id = data["document_id"]
     reports_ref = db.collection('incident_reports')
     report = reports_ref.document(document_id)
     ans=identify_emergency_services(report)

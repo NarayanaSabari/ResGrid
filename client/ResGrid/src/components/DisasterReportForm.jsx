@@ -10,8 +10,8 @@ const DisasterReportForm = () => {
     peopleAffected: "",
   });
 
-  const navigate = useNavigate(); // Initialize useNavigate
 
+  const navigate = useNavigate(); // Initialize useNavigate
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -30,9 +30,8 @@ const DisasterReportForm = () => {
       peopleAffected: "",
     });
     alert("Report submitted successfully!");
-
-    // Redirect to DisasterInfoPage after form submission
     navigate("/disaster-info");
+
   };
 
   return (
