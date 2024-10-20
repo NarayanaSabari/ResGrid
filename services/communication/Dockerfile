@@ -1,20 +1,20 @@
-# Dockerfile
+# Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy requirements.txt and install dependencies
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# Copy the requirements.txt file to the container
+COPY requirements.txt .
 
-# Copy the application code
+# Install the required packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire application code and the JSON file to the container
 COPY . .
 
-# Accept the Firebase service account key as a build argument
-ARG FIREBASE_SERVICE_ACCOUNT_KEY
+# Expose the port that the app runs on
+EXPOSE 5000
 
-# Create the service account key file
-RUN echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
-
-# Command to run the application
+# Define the command to run the application
 CMD ["python", "app.py"]
