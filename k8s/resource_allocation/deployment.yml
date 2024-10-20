@@ -16,10 +16,14 @@ spec:
     spec:
       containers:
       - name: resource-allocation-service # Container name, usually the same as the service
-        image: drcscr.azurecr.io/resource:latest # Replace with the Docker image for this microservice
+        image: sabarinarayana/resource_allocation:latest # Replace with the Docker image for this microservice
         ports:
         - containerPort: 5000  # Port your microservice is running on
-        env:
-#        - name: ENV_VAR_NAME  # Optional environment variables
-#          value: ENV_VAR_VALUE
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 3
 ---
