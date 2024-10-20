@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: incident-reporting-service # Container name, usually the same as the service
-        image: drcscr.azurecr.io/incident:latest # Replace with the Docker image for this microservice
+        image: sabarinarayana/incident_reporting:latest # Replace with the Docker image for this microservice
         ports:
         - containerPort: 5000  # Port your microservice is running on
         env:
