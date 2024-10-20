@@ -4,7 +4,14 @@ from firebase_admin import credentials, firestore
 
 app = Flask(__name__)
 
-cred = credentials.Certificate('./serviceAccountKey.json')
+# Path to the service account key file
+service_account_key_path = 'serviceAccountKey.json'
+
+# Check if the service account key file exists
+if not os.path.exists(service_account_key_path):
+    raise FileNotFoundError(f"Service account key file not found: {service_account_key_path}")
+
+cred = credentials.Certificate(service_account_key_path)
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
