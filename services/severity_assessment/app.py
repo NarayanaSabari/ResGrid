@@ -65,6 +65,9 @@ severity_rules = {
     }
 }
 
+@app.route('/', methods=['GET'])
+def ping():
+    return jsonify({"message": "Server is working!"})
 
 @app.route('/detect_severity', methods=['POST'])
 def detect_severity():
