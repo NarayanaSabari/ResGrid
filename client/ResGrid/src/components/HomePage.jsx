@@ -8,17 +8,12 @@ import {
   Twitter,
   Instagram,
 } from "lucide-react";
-import DisasterReportForm from "./DisasterReportForm";
 
-
+import { Link } from "react-router-dom";
 const Home = () => {
   const [showReportForm, setShowReportForm] = useState(false); 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAboutVisible, setIsAboutVisible] = useState(false);
-
-  const handleReportClick = () => {
-    setShowReportForm(true);
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,10 +27,6 @@ const Home = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  if (showReportForm) {
-    return <DisasterReportForm />;
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -106,12 +97,12 @@ const Home = () => {
             <p className="text-xl mb-8">
               Stay informed, stay prepared, stay safe.
             </p>
-            <button
-              onClick={handleReportClick}
+            <Link
+              to="/report" // Change to Link
               className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full text-lg transition duration-300"
             >
               Report Emergency
-            </button>
+            </Link>
           </div>
         </section>
 
