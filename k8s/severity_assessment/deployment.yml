@@ -19,11 +19,11 @@ spec:
         image: sabarinarayana/severity_assessment:latest  # Replace with the Docker image for this microservice
         ports:
         - containerPort: 5000  # Port your microservice is running on
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 5000
-          initialDelaySeconds: 3
-          periodSeconds: 3
-          failureThreshold: 3
+#        livenessProbe:
+#          httpGet:
+#            path: /
+#            port: 5000
+#          initialDelaySeconds: 3
+#          periodSeconds: 3
+#          failureThreshold: 3
 ---
