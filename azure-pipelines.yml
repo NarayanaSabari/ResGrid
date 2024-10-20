@@ -9,7 +9,7 @@ pr:
 
 variables:
   dockerHubUsername: 'sabarinarayana'  # Replace with your Docker Hub username
-  dockerRpo: 'DockerHubDRCS'
+  dockerRegistry: 'DockerHubDRCS'
   k8sServiceConnection: 'DRCSCluster'  # Service connection for AKS
   azureRMServiceConnection: 'azureRMService'  # Service connection for Azure
   aksCluster: 'drcsCluster'  # AKS cluster name
@@ -18,8 +18,7 @@ variables:
   firebaseServiceAccountKey: '$(FIREBASE_SERVICE_ACCOUNT_KEY)'  # Assume this variable is set in Azure DevOps
 
 pool:
-  name: Default
-  clean: all
+  vmImage: 'ubuntu-latest'
 
 stages:
 - stage: BuildDockerImages
@@ -28,115 +27,81 @@ stages:
   - job: BuildAndPushImages
     displayName: 'Build and Push Docker Images'
     steps:
-    - script: echo "$(firebaseServiceAccountKey)" > serviceAccountKey.json
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
       displayName: 'Create Firebase Service Account Key'
+      env:
+        FIREBASE_SERVICE_ACCOUNT_KEY: $(firebaseServiceAccountKey)
 
-    # Build and push communication service
+    # Communication Service
     - task: Docker@2
       inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'build'
+        containerRegistry: '$(dockerRegistry)'
+        command: 'buildAndPush'
         repository: '$(dockerHubUsername)/communication'
         dockerfile: '$(Build.SourcesDirectory)/services/communication/Dockerfile'
         tags: |
           $(Build.BuildId)
           latest
-        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY="$(firebaseServiceAccountKey)"'
         buildContext: '$(Build.SourcesDirectory)/services/communication'
+        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
+      displayName: 'Build and Push Communication Image'
 
+    # Incident Reporting Service
     - task: Docker@2
       inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'push'
-        repository: '$(dockerHubUsername)/communication'
-        tags: |
-          $(Build.BuildId)
-          latest
-
-    # Build and push incident reporting service
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'build'
+        containerRegistry: '$(dockerRegistry)'
+        command: 'buildAndPush'
         repository: '$(dockerHubUsername)/incident_reporting'
         dockerfile: '$(Build.SourcesDirectory)/services/incident_reporting/Dockerfile'
         tags: |
           $(Build.BuildId)
           latest
-        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY="$(firebaseServiceAccountKey)"'
         buildContext: '$(Build.SourcesDirectory)/services/incident_reporting'
+        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
+      displayName: 'Build and Push Incident Reporting Image'
 
+    # Resource Allocation Service
     - task: Docker@2
       inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'push'
-        repository: '$(dockerHubUsername)/incident_reporting'
-        tags: |
-          $(Build.BuildId)
-          latest
-
-    # Build and push resource allocation service
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'build'
+        containerRegistry: '$(dockerRegistry)'
+        command: 'buildAndPush'
         repository: '$(dockerHubUsername)/resource_allocation'
         dockerfile: '$(Build.SourcesDirectory)/services/resource_allocation/Dockerfile'
         tags: |
           $(Build.BuildId)
           latest
-        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY="$(firebaseServiceAccountKey)"'
         buildContext: '$(Build.SourcesDirectory)/services/resource_allocation'
+        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
+      displayName: 'Build and Push Resource Allocation Image'
 
+    # Severity Assessment Service
     - task: Docker@2
       inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'push'
-        repository: '$(dockerHubUsername)/resource_allocation'
-        tags: |
-          $(Build.BuildId)
-          latest
-
-    # Build and push severity assessment service
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'build'
+        containerRegistry: '$(dockerRegistry)'
+        command: 'buildAndPush'
         repository: '$(dockerHubUsername)/severity_assessment'
         dockerfile: '$(Build.SourcesDirectory)/services/severity_assessment/Dockerfile'
         tags: |
           $(Build.BuildId)
           latest
-        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY="$(firebaseServiceAccountKey)"'
         buildContext: '$(Build.SourcesDirectory)/services/severity_assessment'
+        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
+      displayName: 'Build and Push Severity Assessment Image'
 
+    # Situation Monitoring Service
     - task: Docker@2
       inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'push'
-        repository: '$(dockerHubUsername)/severity_assessment'
-        tags: |
-          $(Build.BuildId)
-          latest
-
-    # Build and push situation monitoring service
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'build'
+        containerRegistry: '$(dockerRegistry)'
+        command: 'buildAndPush'
         repository: '$(dockerHubUsername)/situation_monitoring'
         dockerfile: '$(Build.SourcesDirectory)/services/situation_monitoring/Dockerfile'
         tags: |
           $(Build.BuildId)
           latest
-        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY="$(firebaseServiceAccountKey)"'
         buildContext: '$(Build.SourcesDirectory)/services/situation_monitoring'
-
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(dockerRpo)'
-        command: 'push'
-        repository: '$(dockerHubUsername)/situation_monitoring'
-        tags: |
-          $(Build.BuildId)
-          latest
+        arguments: '--build-arg FIREBASE_SERVICE_ACCOUNT_KEY=$(firebaseServiceAccountKey)'
+      displayName: 'Build and Push Situation Monitoring Image'
