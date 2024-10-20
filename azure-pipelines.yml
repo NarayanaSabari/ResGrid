@@ -8,136 +8,67 @@ pr:
       - '*'
 
 variables:
-  containerRegistry: 'drcscr.azurecr.io'  # ACR URL
+  dockerHubUsername: 'sabarinarayana'  # Replace with your Docker Hub username
+  dockerRpo: 'DockerHubDRCS'
   k8sServiceConnection: 'DRCSCluster'  # Service connection for AKS
   azureRMServiceConnection: 'azureRMService'  # Service connection for Azure
-  aksCluster: 'drcsCluster'                  # AKS cluster name
-  resourceGroup: 'DRCS'            # Resource group for AKS
-  namespace: 'default'                              # Kubernetes namespace to deploy to
+  aksCluster: 'drcsCluster'  # AKS cluster name
+  resourceGroup: 'DRCS'  # Resource group for AKS
+  namespace: 'default'  # Kubernetes namespace to deploy to
 
 pool:
   name: Default
   clean: all
 
-# stages:
-# - stage: BuildDockerImages
-#   displayName: 'Build Docker Images'
-#   jobs:
-#   - job: BuildAndPushImages
-#     displayName: 'Build and Push Docker Images'
-#     steps:
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: '$(dockerRpo)'  # Create a service connection to Docker Hub in your Azure DevOps project
-#         command: 'buildAndPush'
-#         repository: '$(dockerHubUsername)/communication'
-#         dockerfile: '$(Build.SourcesDirectory)/services/communication/Dockerfile'
-#         tags: |
-#           $(Build.BuildId)
-#           latest
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: '$(dockerRpo)'
-#         command: 'buildAndPush'
-#         repository: '$(dockerHubUsername)/incident_reporting'
-#         dockerfile: '$(Build.SourcesDirectory)/services/incident_reporting/Dockerfile'
-#         tags: |
-#           $(Build.BuildId)
-#           latest
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: '$(dockerRpo)'
-#         command: 'buildAndPush'
-#         repository: '$(dockerHubUsername)/resource_allocation'
-#         dockerfile: '$(Build.SourcesDirectory)/services/resource_allocation/Dockerfile'
-#         tags: |
-#           $(Build.BuildId)
-#           latest
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: '$(dockerRpo)'
-#         command: 'buildAndPush'
-#         repository: '$(dockerHubUsername)/severity_assessment'
-#         dockerfile: '$(Build.SourcesDirectory)/services/severity_assessment/Dockerfile'
-#         tags: |
-#           $(Build.BuildId)
-#           latest
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: '$(dockerRpo)'
-#         command: 'buildAndPush'
-#         repository: '$(dockerHubUsername)/situation_monitoring'
-#         dockerfile: '$(Build.SourcesDirectory)/services/situation_monitoring/Dockerfile'
-#         tags: |
-#           $(Build.BuildId)
-#           latest
-
-
 stages:
-- stage: DeployToAKS
-  displayName: 'Deploy to AKS'
+- stage: BuildDockerImages
+  displayName: 'Build Docker Images'
   jobs:
-  - deployment: DeployToAKS
-    displayName: 'Deploy to AKS'
-    environment: 'production'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - checkout: self
-            persistCredentials: true
-            
-          - task: Bash@3
-            displayName: 'Combine deployment and service YAML files'
-            inputs:
-              targetType: 'inline'
-              script: |
-                set -e  # Exit immediately if a command exits with a non-zero status
-
-                # Ensure the directory exists
-                mkdir -p $(Build.ArtifactStagingDirectory)
-
-                # Combine the files and add new lines between them
-                for file in communication incident_reporting resource_allocation severity_assessment situation_monitoring; do
-                    cat $(Build.SourcesDirectory)/k8s/$file/deployment.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                    echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                    cat $(Build.SourcesDirectory)/k8s/$file/service.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                    echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                done
-                cat $(Build.SourcesDirectory)/k8s/ingres.yml >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-                echo -e "\n" >> $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-
-                # Display the contents of the combined file (for debugging)
-                cat $(Build.ArtifactStagingDirectory)/combined-manifest.yml
-
-             
-                
-#
-          - task: Kubernetes@1
-            inputs:
-              connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: '$(k8sServiceConnection)'
-              namespace: '$(namespace)'
-              command: 'apply'
-              useConfigurationFile: true
-              configuration: '$(Build.ArtifactStagingDirectory)/combined-manifest.yml'
-              secretType: 'dockerRegistry'
-              containerRegistryType: 'Azure Container Registry'
-              azureSubscriptionEndpointForSecrets: '$(azureRMServiceConnection)'
-              azureContainerRegistry: '$(containerRegistry)'
-
-          - task: Kubernetes@1
-            displayName: 'Verify Deployment'
-            inputs:
-              connectionType: 'Azure Resource Manager'
-              azureSubscriptionEndpoint: '$(azureRMServiceConnection)'
-              azureResourceGroup: '$(resourceGroup)'
-              kubernetesCluster: '$(aksCluster)'
-              namespace: '$(namespace)'
-              command: 'get'
-              arguments: 'pods'
-
-          - script: |
-              echo "Application deployed to AKS cluster $(aksCluster)"
-              kubectl get svc -n $(namespace); echo "Check your public IP above."
-            displayName: 'Print Deployment Info'
+  - job: BuildAndPushImages
+    displayName: 'Build and Push Docker Images'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRpo)'  # Create a service connection to Docker Hub in your Azure DevOps project
+        command: 'buildAndPush'
+        repository: '$(dockerHubUsername)/communication'
+        dockerfile: '$(Build.SourcesDirectory)/services/communication/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRpo)'
+        command: 'buildAndPush'
+        repository: '$(dockerHubUsername)/incident_reporting'
+        dockerfile: '$(Build.SourcesDirectory)/services/incident_reporting/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRpo)'
+        command: 'buildAndPush'
+        repository: '$(dockerHubUsername)/resource_allocation'
+        dockerfile: '$(Build.SourcesDirectory)/services/resource_allocation/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRpo)'
+        command: 'buildAndPush'
+        repository: '$(dockerHubUsername)/severity_assessment'
+        dockerfile: '$(Build.SourcesDirectory)/services/severity_assessment/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRpo)'
+        command: 'buildAndPush'
+        repository: '$(dockerHubUsername)/situation_monitoring'
+        dockerfile: '$(Build.SourcesDirectory)/services/situation_monitoring/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
