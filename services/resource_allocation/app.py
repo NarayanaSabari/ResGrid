@@ -121,7 +121,7 @@ def allocate():
     report = reports_ref.document(document_id)
     doc = report.get()
     data = doc.to_dict()
-    type = doc.get('incident_type')
+    type = data.get('incident_type')
     ans=identify_emergency_services(type)
     return jsonify(services=ans)
 
