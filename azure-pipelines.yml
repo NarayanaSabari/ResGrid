@@ -18,7 +18,8 @@ variables:
   firebaseServiceAccountKey: '$(FIREBASE_SERVICE_ACCOUNT_KEY)'  # Assume this variable is set in Azure DevOps
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: Default
+  clean: all
 
 stages:
 - stage: BuildDockerImages
