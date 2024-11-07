@@ -1,0 +1,36 @@
+version: '3'
+services:
+  incident_reporting:
+    build:
+      context: ./services/incident_reporting
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+
+  severity_assessment:
+    build:
+      context: ./services/severity_assessment
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5000"
+
+  resource_assessment:
+    build:
+      context: ./services/resource_allocation
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5000"
+
+  communication:
+    build:
+      context: ./services/communication
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5000"
+
+  situation_monitoring:
+    build:
+      context: ./services/situation_monitoring
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5000"
