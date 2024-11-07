@@ -1,13 +1,6 @@
 import { useState } from "react";
 
-// Import ShadCN UI components
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from "@/components/ui/card";
+//
 
 // Import the child components
 import { MainDashboard } from "./MainDashboard"; // Assuming MainDashboard is in a separate file
