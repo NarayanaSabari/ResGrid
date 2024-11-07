@@ -1,34 +1,26 @@
-import { useParams } from "react-router-dom"; // To access dynamic params in the URL
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from "@/components/ui/card";
-
+import { useParams } from "react-router-dom";
+import { useState,useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AlertTriangle, MapPin } from "lucide-react";
-
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts"; // Recharts for the graph
-
-import disasterData from "../data/disasterData"; // Import the disaster data
 
 // Disaster Detail Component
 const DisasterDetail = () => {
   const { id } = useParams(); // Get the ID from the URL params
-  const disaster = disasterData.find((d) => d.id === parseInt(id)); // Find disaster by ID
+  const [disaster, setDisaster] = useState(null);
 
-  if (!disaster) {
-    return <div>Disaster not found!</div>; // Handle if no disaster is found
-  }
+  useEffect(() => {
+    fetch(`http://localhost:5005/get_disasters`)
+      .then((response) => response.json())
+      .then((data) => {
+        const foundDisaster = data.find((d) => d.id === id);
+        setDisaster(foundDisaster);
+      })
+      .catch((error) =>
+        console.error("Error fetching disaster details:", error)
+      );
+  }, [id]);
+
+  if (!disaster) return <div>Loading...</div>;
 
   return (
     <div className="p-6 space-y-6">
@@ -72,35 +64,26 @@ const DisasterDetail = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Affected People</p>
-                    <p className="font-medium">
-                      {disaster.affectedPeople.toLocaleString()}
-                    </p>
+                    <p className="font-medium">{disaster.affectedPeople}</p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          {/* Severity Trend Graph */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Severity Trend</CardTitle>
-              <CardDescription>24-hour monitoring data</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={disaster.timeSeriesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#8884d8" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          {disaster.image && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Disaster Image</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <img
+                  src={disaster.image}
+                  alt="Disaster"
+                  className="w-full rounded"
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -114,28 +97,11 @@ const DisasterDetail = () => {
                 <span>{disaster.location}</span>
               </div>
               <div className="mt-4 h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                {/* Placeholder for a map */}
                 Map Placeholder
               </div>
             </CardContent>
           </Card>
-
-          {/* Disaster Image */}
-          {disaster.image && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Disaster Image</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-center">
-                  <img
-                    src={disaster.image}
-                    alt={`${disaster.type} - ${disaster.location}`}
-                    className="w-full h-auto rounded-lg"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>

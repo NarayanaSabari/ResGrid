@@ -1,3 +1,4 @@
 flask
 firebase-admin
 firebase
+flask-cors
