@@ -6,6 +6,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5001:5000"
+    volumes:
+      - ./services/accountConfig.json:/app/accountConfig.json
+    environment:
+      - CONFIG_FILE=/app/accountConfig.json
+    networks:
+      - my_network
 
   severity_assessment:
     build:
@@ -13,13 +19,25 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5002:5000"
+    volumes:
+      - ./services/accountConfig.json:/app/accountConfig.json
+    environment:
+      - CONFIG_FILE=/app/accountConfig.json
+    networks:
+      - my_network
 
-  resource_assessment:
+  resource_allocation:
     build:
       context: ./services/resource_allocation
       dockerfile: Dockerfile
     ports:
       - "5003:5000"
+    volumes:
+      - ./services/accountConfig.json:/app/accountConfig.json
+    environment:
+      - CONFIG_FILE=/app/accountConfig.json
+    networks:
+      - my_network
 
   communication:
     build:
@@ -27,6 +45,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5004:5000"
+    volumes:
+      - ./services/accountConfig.json:/app/accountConfig.json
+    environment:
+      - CONFIG_FILE=/app/accountConfig.json
+    networks:
+      - my_network
 
   situation_monitoring:
     build:
@@ -34,3 +58,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5005:5000"
+    volumes:
+      - ./services/accountConfig.json:/app/accountConfig.json
+    environment:
+      - CONFIG_FILE=/app/accountConfig.json
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

@@ -1,6 +1,23 @@
 from flask import Flask, request, jsonify
+import firebase_admin
+from firebase_admin import credentials, firestore
+import os
+import json
 
 app = Flask(__name__)
+
+def load_json_file(filepath):
+    with open(filepath) as f:
+        return json.load(f)
+
+# Load JSON configuration
+json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
+config = load_json_file(json_file)
+
+cred = credentials.Certificate(config['firebase'])
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 deployment_counts = {
     "low": 1,     # Low severity: 1 official
@@ -11,7 +28,7 @@ deployment_counts = {
 
 @app.route('/')
 def home():
-    return "Hello, World! Welcome to my Flask app! Communication service"
+    return "Communication service"
 
 @app.route('/broadcast', methods=['POST'])
 def broadcast():
