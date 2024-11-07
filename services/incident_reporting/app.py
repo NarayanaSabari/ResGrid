@@ -22,7 +22,7 @@ db = firestore.client()
 
 @app.route('/')
 def home():
-    return "Welcome to the Incident Reporting Service!"
+    return "Incident Reporting Service!"
 
 @app.route('/report', methods=['POST'])
 def report():

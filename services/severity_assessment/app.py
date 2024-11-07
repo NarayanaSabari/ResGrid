@@ -1,8 +1,26 @@
 from flask import Flask, request, jsonify
+import firebase_admin
+from firebase_admin import credentials, firestore
 import re
 import logging
+import os
+import json
 
 app = Flask(__name__)
+
+def load_json_file(filepath):
+    with open(filepath) as f:
+        return json.load(f)
+
+# Load JSON configuration
+json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
+config = load_json_file(json_file)
+
+cred = credentials.Certificate(config['firebase'])
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
 logging.basicConfig(level=logging.DEBUG)
 
 # Define severity rules using regex patterns
@@ -67,7 +85,7 @@ severity_rules = {
 
 @app.route('/')
 def home():
-    return "Welcome to the Incident Reporting Service!"
+    return "Severity Assessment"
 
 @app.route('/detect_severity', methods=['POST'])
 def detect_severity():
