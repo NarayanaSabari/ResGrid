@@ -110,7 +110,7 @@ db = firestore.client()
 
 @app.route('/')
 def home():
-    return "Hello, World! Welcome to my Flask app! Resource Allocation"
+    return "Resource Allocation"
 
 @app.route("/allocate", methods=['POST'])
 def allocate():

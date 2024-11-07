@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify
+import firebase_admin
+from firebase_admin import credentials, firestore
 import re
 import logging
+import os
+import json
 
 app = Flask(__name__)
 
@@ -81,7 +85,7 @@ severity_rules = {
 
 @app.route('/')
 def home():
-    return "Welcome to the Incident Reporting Service!"
+    return "Severity Assessment"
 
 @app.route('/detect_severity', methods=['POST'])
 def detect_severity():
