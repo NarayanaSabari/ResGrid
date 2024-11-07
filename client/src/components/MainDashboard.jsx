@@ -1,220 +1,210 @@
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { AlertTriangle, MapPin } from "lucide-react";
+import {
+  AlertTriangle,
+  Users,
+  Calendar,
+  Activity,
+  CheckCircle,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-// Main Dashboard Component
-const MainDashboard = ({ disasterData }) => {
-  // Summary Stats
-  const totalDisasters = disasterData.length;
-  const activeDisasters = disasterData.filter((d) => d.status === "Ongoing");
-  const activeCount = activeDisasters.length;
-  const resolvedCount = disasterData.filter(
-    (d) => d.status === "Resolved"
+const MainDashboard = () => {
+  const [disasters, setDisasters] = useState([]);
+  const [totalDisasters, setTotalDisasters] = useState(0);
+  const [peopleAffected, setPeopleAffected] = useState(0);
+  const [resourcesDeployed, setResourcesDeployed] = useState(85); // Example static value
+
+  useEffect(() => {
+    fetch("http://localhost:5005/get_disasters")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setDisasters(data);
+        setTotalDisasters(data.length);
+        setPeopleAffected(
+          data.reduce((total, d) => total + (d.affectedPeople || 0), 0)
+        );
+      })
+      .catch((error) => console.error("Error fetching disasters:", error));
+  }, []);
+
+  const ongoingDisasters = disasters.filter(
+    (d) => d.status === "Ongoing"
   ).length;
-  const totalAffectedPeople = disasterData.reduce(
-    (acc, disaster) => acc + disaster.affectedPeople,
-    0
-  );
-
-  // Recent Updates (Mocked data for now)
-  const recentUpdates = [
-    {
-      id: 1,
-      message:
-        "Flood in New Orleans escalated to high severity. Immediate evacuation required.",
-    },
-    {
-      id: 2,
-      message: "Earthquake in Tokyo resolved. Rescue operations complete.",
-    },
-    {
-      id: 3,
-      message:
-        "Wildfire in California spreading towards residential areas. Emergency response teams deployed.",
-    },
-  ];
+  const closedDisasters = disasters.filter((d) => d.status === "Closed").length;
 
   return (
     <div className="p-6 space-y-6">
-      {/* Page Title */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Disaster Monitoring Dashboard</h1>
-      </div>
+      <h1 className="text-3xl font-bold">Disaster Monitoring Dashboard</h1>
 
-      {/* Top Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Summary Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Total Disasters</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-semibold">{totalDisasters}</p>
+          <CardContent className="flex items-center space-x-4">
+            <AlertTriangle className="text-red-500 w-10 h-10" />
+            <div>
+              <h2 className="text-2xl font-bold">{totalDisasters}</h2>
+              <p className="text-sm text-gray-500">+2 from last week</p>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Active Disasters</CardTitle>
+            <CardTitle>People Affected</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-semibold">{activeCount}</p>
+          <CardContent className="flex items-center space-x-4">
+            <Users className="text-blue-500 w-10 h-10" />
+            <div>
+              <h2 className="text-2xl font-bold">
+                {peopleAffected.toLocaleString()}
+              </h2>
+              <p className="text-sm text-gray-500">Across all regions</p>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Resolved Disasters</CardTitle>
+            <CardTitle>Ongoing Disasters</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-semibold">{resolvedCount}</p>
+          <CardContent className="flex items-center space-x-4">
+            <Activity className="text-orange-500 w-10 h-10" />
+            <div>
+              <h2 className="text-2xl font-bold">{ongoingDisasters}</h2>
+              <p className="text-sm text-gray-500">Currently active</p>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Total Affected People</CardTitle>
+            <CardTitle>Closed Disasters</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-semibold">
-              {totalAffectedPeople.toLocaleString()}
-            </p>
+          <CardContent className="flex items-center space-x-4">
+            <CheckCircle className="text-green-500 w-10 h-10" />
+            <div>
+              <h2 className="text-2xl font-bold">{closedDisasters}</h2>
+              <p className="text-sm text-gray-500">Completed events</p>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Active and All Disasters Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Active Disasters */}
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>Active Disasters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {activeDisasters.length > 0 ? (
-                activeDisasters.map((disaster) => (
-                  <Link
-                    to={`/disaster/${disaster.id}`}
-                    key={disaster.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <AlertTriangle
-                        className={
-                          disaster.severity === "High"
-                            ? "text-red-500"
-                            : disaster.severity === "Medium"
-                            ? "text-yellow-500"
-                            : "text-green-500"
-                        }
-                      />
-                      <div>
-                        <h3 className="font-medium">{disaster.type}</h3>
-                        <p className="text-sm text-gray-500">
-                          {disaster.location}
-                        </p>
-                        <p className="font-medium text-blue-600">
-                          {disaster.affectedPeople.toLocaleString()} People
-                          Affected
-                        </p>
+      {/* Disaster Lists Side by Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Ongoing Disasters List */}
+        <div>
+          <h2 className="text-xl font-bold">Ongoing Disasters</h2>
+          <p className="text-sm text-gray-500">Current ongoing situations</p>
+
+          <div className="grid grid-cols-1 gap-4 mt-4">
+            {ongoingDisasters === 0 ? (
+              <p className="text-gray-500">No ongoing disasters available.</p>
+            ) : (
+              disasters
+                .filter((disaster) => disaster.status === "Ongoing")
+                .map((disaster) => (
+                  <Link to={`/disaster/${disaster.id}`} key={disaster.id}>
+                    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div className="flex items-center space-x-4">
+                        <AlertTriangle
+                          className={
+                            disaster.severity === "High"
+                              ? "text-red-500"
+                              : disaster.severity === "Medium"
+                              ? "text-yellow-500"
+                              : "text-green-500"
+                          }
+                        />
+                        <div>
+                          <h3 className="font-medium">
+                            {disaster.type || "Unknown Disaster"}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {disaster.location || "Unknown Location"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span
+                          className={
+                            disaster.trend === "increasing"
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }
+                        >
+                          {disaster.trend === "increasing"
+                            ? "↗ increasing"
+                            : "↘ decreasing"}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {disaster.lastUpdate || "N/A"} ago
+                        </span>
                       </div>
                     </div>
                   </Link>
                 ))
-              ) : (
-                <p>No active disasters at the moment.</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        </div>
 
-        {/* All Disasters */}
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>All Disasters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {disasterData.length > 0 ? (
-                disasterData.map((disaster) => (
-                  <Link
-                    to={`/disaster/${disaster.id}`}
-                    key={disaster.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <AlertTriangle
-                        className={
-                          disaster.severity === "High"
-                            ? "text-red-500"
-                            : disaster.severity === "Medium"
-                            ? "text-yellow-500"
-                            : "text-green-500"
-                        }
-                      />
-                      <div>
-                        <h3 className="font-medium">{disaster.type}</h3>
-                        <p className="text-sm text-gray-500">
-                          {disaster.location}
-                        </p>
-                        <p className="font-medium text-blue-600">
-                          {disaster.affectedPeople.toLocaleString()} People
-                          Affected
-                        </p>
+        {/* Closed Disasters List */}
+        <div>
+          <h2 className="text-xl font-bold">Closed Disasters</h2>
+          <p className="text-sm text-gray-500">Past disaster events</p>
+
+          <div className="grid grid-cols-1 gap-4 mt-4">
+            {closedDisasters === 0 ? (
+              <p className="text-gray-500">No closed disasters available.</p>
+            ) : (
+              disasters
+                .filter((disaster) => disaster.status === "Closed")
+                .map((disaster) => (
+                  <Link to={`/disaster/${disaster.id}`} key={disaster.id}>
+                    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div className="flex items-center space-x-4">
+                        <AlertTriangle
+                          className={
+                            disaster.severity === "High"
+                              ? "text-red-500"
+                              : disaster.severity === "Medium"
+                              ? "text-yellow-500"
+                              : "text-green-500"
+                          }
+                        />
+                        <div>
+                          <h3 className="font-medium">
+                            {disaster.type || "Unknown Disaster"}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {disaster.location || "Unknown Location"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-gray-500">Closed</span>
+                        <span className="text-sm text-gray-500">
+                          {disaster.lastUpdate || "N/A"} ago
+                        </span>
                       </div>
                     </div>
                   </Link>
                 ))
-              ) : (
-                <p>No disasters available.</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Map Visualization Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>Disaster Map</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px] bg-gray-200 rounded-lg flex items-center justify-center">
-              {/* Placeholder for map */}
-              <MapPin className="text-gray-400" />
-              <span className="text-gray-500">
-                Map Placeholder (with disaster locations)
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Alerts & Updates */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Alerts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {recentUpdates.map((update) => (
-                <li key={update.id} className="text-sm text-gray-700">
-                  {update.message}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-MainDashboard.propTypes = {
-  disasterData: PropTypes.array.isRequired,
 };
 
 export default MainDashboard;
