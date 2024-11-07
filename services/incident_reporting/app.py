@@ -31,13 +31,13 @@ def report():
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    required_fields = ['incident_type', 'location', 'description']
+    required_fields = ['type', 'location', 'description','image']
     
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    reports_ref = db.collection('incident_reports')
+    reports_ref = db.collection('Disasters')
     
     # Add the document and capture the reference
     new_report_ref = reports_ref.add(data)
@@ -45,7 +45,7 @@ def report():
     # Get the document_id of the newly added document
     document_id = new_report_ref[1].id  # new_report_ref is a tuple (time, doc_ref)
     
-    return jsonify({"message": "Report received", "document_id": document_id, "type": data['incident_type'], "description": data['description']}), 201
+    return jsonify({"message": "Report received", "document_id": document_id, "type": data['type'], "description": data['description']}), 201
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
