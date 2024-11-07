@@ -1,0 +1,99 @@
+[
+  {
+    "id": 1,
+    "type": "Flood",
+    "location": "New Orleans, LA",
+    "severity": "High",
+    "status": "Ongoing",
+    "affectedPeople": 5000,
+    "lastUpdate": "2024-11-05",
+    "trend": "increasing",
+    "timeSeriesData": [
+      { "time": "00:00", "value": 30 },
+      { "time": "04:00", "value": 45 },
+      { "time": "08:00", "value": 75 },
+      { "time": "12:00", "value": 85 },
+      { "time": "16:00", "value": 65 },
+      { "time": "20:00", "value": 55 }
+    ],
+    "image": "https://example.com/images/flood.jpg"  
+  },
+  {
+    "id": 2,
+    "type": "Earthquake",
+    "location": "Tokyo, Japan",
+    "severity": "Medium",
+    "status": "Resolved",
+    "affectedPeople": 2000,
+    "lastUpdate": "2024-11-01",
+    "trend": "decreasing",
+    "timeSeriesData": [
+      { "time": "00:00", "value": 80 },
+      { "time": "04:00", "value": 65 },
+      { "time": "08:00", "value": 45 },
+      { "time": "12:00", "value": 30 },
+      { "time": "16:00", "value": 25 },
+      { "time": "20:00", "value": 20 }
+    ],
+    "image": "https://example.com/images/earthquake.jpg" 
+  },
+
+
+  {
+    "id": 3,
+    "type": "Wildfire",
+    "location": "California, USA",
+    "severity": "High",
+    "status": "Ongoing",
+    "affectedPeople": 8000,
+    "lastUpdate": "2024-11-06",
+    "trend": "increasing",
+    "timeSeriesData": [
+      { "time": "00:00", "value": 40 },
+      { "time": "04:00", "value": 60 },
+      { "time": "08:00", "value": 90 },
+      { "time": "12:00", "value": 110 },
+      { "time": "16:00", "value": 100 },
+      { "time": "20:00", "value": 80 }
+    ],
+    "image": "https://example.com/images/earthquake.jpg"
+  },
+  {
+    "id": 4,
+    "type": "Hurricane",
+    "location": "Miami, FL",
+    "severity": "High",
+    "status": "Ongoing",
+    "affectedPeople": 12000,
+    "lastUpdate": "2024-11-06",
+    "trend": "steady",
+    "timeSeriesData": [
+      { "time": "00:00", "value": 70 },
+      { "time": "04:00", "value": 90 },
+      { "time": "08:00", "value": 120 },
+      { "time": "12:00", "value": 150 },
+      { "time": "16:00", "value": 140 },
+      { "time": "20:00", "value": 130 }
+    ],
+    "image": "https://example.com/images/earthquake.jpg"
+  },
+  {
+    "id": 5,
+    "type": "Tornado",
+    "location": "Oklahoma City, OK",
+    "severity": "Medium",
+    "status": "Resolved",
+    "affectedPeople": 1000,
+    "lastUpdate": "2024-10-25",
+    "trend": "decreasing",
+    "timeSeriesData": [
+      { "time": "00:00", "value": 60 },
+      { "time": "04:00", "value": 50 },
+      { "time": "08:00", "value": 40 },
+      { "time": "12:00", "value": 30 },
+      { "time": "16:00", "value": 20 },
+      { "time": "20:00", "value": 10 }
+    ],
+    "image": "https://example.com/images/earthquake.jpg"
+  }
+]

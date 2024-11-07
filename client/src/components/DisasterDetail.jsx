@@ -1,6 +1,4 @@
-import React from "react";
-
-// Import ShadCN UI components
+import { useParams } from "react-router-dom"; // To access dynamic params in the URL
 import {
   Card,
   CardHeader,
@@ -8,7 +6,8 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
-import { MapPin, AlertTriangle } from "lucide-react";
+
+import { AlertTriangle, MapPin } from "lucide-react";
 
 import {
   LineChart,
@@ -18,14 +17,26 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
+} from "recharts"; // Recharts for the graph
+
+import disasterData from "../data/disasterData"; // Import the disaster data
 
 // Disaster Detail Component
-export const DisasterDetail = ({ disaster, onBack }) => {
+const DisasterDetail = () => {
+  const { id } = useParams(); // Get the ID from the URL params
+  const disaster = disasterData.find((d) => d.id === parseInt(id)); // Find disaster by ID
+
+  if (!disaster) {
+    return <div>Disaster not found!</div>; // Handle if no disaster is found
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <button onClick={onBack} className="text-blue-500 hover:text-blue-600">
+        <button
+          onClick={() => window.history.back()} // Go back to the dashboard
+          className="text-blue-500 hover:text-blue-600"
+        >
           ← Back to Dashboard
         </button>
         <span
@@ -51,9 +62,6 @@ export const DisasterDetail = ({ disaster, onBack }) => {
                   {disaster.type} - {disaster.location}
                 </span>
               </CardTitle>
-              <CardDescription>
-                Last updated: {disaster.lastUpdate}
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -68,19 +76,12 @@ export const DisasterDetail = ({ disaster, onBack }) => {
                       {disaster.affectedPeople.toLocaleString()}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Evacuation Status</p>
-                    <p className="font-medium">{disaster.evacuationStatus}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Trend</p>
-                    <p className="font-medium capitalize">{disaster.trend}</p>
-                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Severity Trend Graph */}
           <Card>
             <CardHeader>
               <CardTitle>Severity Trend</CardTitle>
@@ -100,43 +101,9 @@ export const DisasterDetail = ({ disaster, onBack }) => {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Disaster Image</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-center">
-                <img
-                  src={disaster.imageUrl}
-                  alt={`${disaster.type} in ${disaster.location}`}
-                  className="max-w-full h-auto rounded-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <button className="w-full p-2 text-white bg-red-500 rounded-lg hover:bg-red-600">
-                  Trigger Emergency Alert
-                </button>
-                <button className="w-full p-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                  Deploy Resources
-                </button>
-                <button className="w-full p-2 text-white bg-green-500 rounded-lg hover:bg-green-600">
-                  Update Status
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Location</CardTitle>
@@ -151,8 +118,28 @@ export const DisasterDetail = ({ disaster, onBack }) => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Disaster Image */}
+          {disaster.image && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Disaster Image</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-center">
+                  <img
+                    src={disaster.image}
+                    alt={`${disaster.type} - ${disaster.location}`}
+                    className="w-full h-auto rounded-lg"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
+export default DisasterDetail;
