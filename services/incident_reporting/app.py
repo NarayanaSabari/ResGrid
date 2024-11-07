@@ -31,7 +31,7 @@ def report():
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    required_fields = ['type', 'location', 'description','image']
+    required_fields = ['type', 'location', 'description','image', "affectedPeople"]
     
     for field in required_fields:
         if field not in data:
