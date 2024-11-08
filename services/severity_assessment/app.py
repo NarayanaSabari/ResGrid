@@ -37,7 +37,7 @@ def handle_request():
 
     # Forward the message to an external service and get the response, including severity level
     external_response = forward_to_external_service(message)
-
+    app.logger.info(f"external_response  data: {external_response}")
     # Send the response and severity level to Firebase
     firebase_response = send_response_to_firebase(external_response, document_id)
 
