@@ -23,7 +23,15 @@ db = firestore.client()
 
 @app.route("/webhook", methods=["POST"])
 def handle_request():
-    data = request.get_json()  # Get the JSON data from the POST request
+    # Check if the request contains JSON data
+    if request.is_json:
+        data = request.get_json()
+        # Log the received data
+        app.logger.info(f"Received JSON data: {data}")
+    else:
+        # Log form data or other request types
+        data = request.form
+        app.logger.info(f"Received form data: {data}")
     document_id = data.get("document_id")
     message = data.get("message")  # Extract the message content
 

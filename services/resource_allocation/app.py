@@ -8,7 +8,15 @@ def home():
 
 @app.route("/low", methods=['POST'])
 def low_allocate():
-    data = request.get_json()
+    # Check if the request contains JSON data
+    if request.is_json:
+        data = request.get_json()
+        # Log the received data
+        app.logger.info(f"Received JSON data: {data}")
+    else:
+        # Log form data or other request types
+        data = request.form
+        app.logger.info(f"Received form data: {data}")
 
     if not data:
         return jsonify({"error": "No data provided"}), 400
@@ -24,7 +32,15 @@ def low_allocate():
 
 @app.route("/medium", methods=['POST'])
 def medium_allocate():
-    data = request.get_json()
+    # Check if the request contains JSON data
+    if request.is_json:
+        data = request.get_json()
+        # Log the received data
+        app.logger.info(f"Received JSON data: {data}")
+    else:
+        # Log form data or other request types
+        data = request.form
+        app.logger.info(f"Received form data: {data}")
 
     if not data:
         return jsonify({"error": "No data provided"}), 400
@@ -40,7 +56,15 @@ def medium_allocate():
 
 @app.route("/high", methods=['POST'])
 def high_allocate():
-    data = request.get_json()
+    # Check if the request contains JSON data
+    if request.is_json:
+        data = request.get_json()
+        # Log the received data
+        app.logger.info(f"Received JSON data: {data}")
+    else:
+        # Log form data or other request types
+        data = request.form
+        app.logger.info(f"Received form data: {data}")
 
     if not data:
         return jsonify({"error": "No data provided"}), 400
