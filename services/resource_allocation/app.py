@@ -19,7 +19,7 @@ def low_allocate():
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    return jsonify({"fire_engine": (data['affectedPeople'] * 0.5) // 50, "ambulance": (data['affectedPeople'] * 0.2) // 2, "no_of_beds": data['affectedPeople'], "type": data['type']}), 200
+    return jsonify({"fire_engine": (int(data['affectedPeople']) * 0.5) // 50, "ambulance": (int(data['affectedPeople']) * 0.2) // 2, "no_of_beds": data['affectedPeople'], "type": data['type']}), 200
 
 
 @app.route("/medium", methods=['POST'])
@@ -35,7 +35,7 @@ def medium_allocate():
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    return jsonify({"fire_engine": (data['affectedPeople'] * 1) // 50, "ambulance": (data['affectedPeople'] * 0.5) // 2,
+    return jsonify({"fire_engine": (int(data['affectedPeople']) * 1) // 50, "ambulance": (int(data['affectedPeople']) * 0.5) // 2,
                     "no_of_beds": data['affectedPeople'], 'type': data['type']}), 200
 
 @app.route("/high", methods=['POST'])
@@ -51,7 +51,7 @@ def high_allocate():
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    return jsonify({"fire_engine": (data['affectedPeople'] * 1.5) // 50, "ambulance": (data['affectedPeople'] * 0.8) // 2,
+    return jsonify({"fire_engine": (int(data['affectedPeople']) * 1.5) // 50, "ambulance": (int(data['affectedPeople']) * 0.8) // 2,
                     "no_of_beds": data['affectedPeople'], 'type': data['type']}), 200
 
 if __name__ == '__main__':

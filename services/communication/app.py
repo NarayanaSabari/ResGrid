@@ -6,25 +6,25 @@ import json
 
 app = Flask(__name__)
 
-def load_json_file(filepath):
-    with open(filepath) as f:
-        return json.load(f)
-
-# Load JSON configuration
-json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
-config = load_json_file(json_file)
-
-cred = credentials.Certificate(config['firebase'])
-firebase_admin.initialize_app(cred)
-
-db = firestore.client()
-
-deployment_counts = {
-    "low": 1,     # Low severity: 1 official
-    "medium": 2,  # Medium severity: 2 officials
-    "high": 5,    # High severity: 5 officials
-    "critical": 10 # Critical severity: 10 officials
-}
+# def load_json_file(filepath):
+#     with open(filepath) as f:
+#         return json.load(f)
+#
+# # Load JSON configuration
+# json_file = os.getenv("CONFIG_FILE", "config.json")  # Default to config.json
+# config = load_json_file(json_file)
+#
+# cred = credentials.Certificate(config['firebase'])
+# firebase_admin.initialize_app(cred)
+#
+# db = firestore.client()
+#
+# deployment_counts = {
+#     "low": 1,     # Low severity: 1 official
+#     "medium": 2,  # Medium severity: 2 officials
+#     "high": 5,    # High severity: 5 officials
+#     "critical": 10 # Critical severity: 10 officials
+# }
 
 @app.route('/')
 def home():
@@ -34,15 +34,21 @@ def home():
 def broadcast():
     data = request.get_json()
 
-    resource = data.services
-    severity = data.severity
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
 
-    count = deployment_counts[severity]
+    required_fields = ['fire_engine', 'ambulance', 'no_of_beds', 'type']
 
-    # Create a response dictionary with service names and their respective counts
-    response = {service: count for service in resource}
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field: {field}"}), 400
 
-    return jsonify(response)
+    return jsonify({
+        'Message': f'A {data["type"]} has been reported',
+        'Fire station': f'We are requesting {data["fire_engine"]} to be dispatched to the location',
+        'Hospital': f'We are requesting {data["no_of_beds"]} vacant beds',
+        'Ambulance service': f'We are requesting {data["ambulance"]} ambulance to reach the spot'
+    }), 200
 
 
 if __name__ == '__main__':
