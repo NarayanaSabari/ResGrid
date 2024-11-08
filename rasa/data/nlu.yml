@@ -1,0 +1,70 @@
+version: "3.1"
+nlu:
+  - intent: report_incident
+    examples: |
+      - There is a high-severity flood
+      - It's a medium flood
+      - The flood is low severity
+      - A severe flood is approaching
+      - Huge flood in the area
+      - Extreme flooding in the city
+      - Water levels are extremely high due to flooding
+      - Massive flood warnings issued
+      - Intense flooding is reported
+      - Floodwaters are rising quickly
+      - Streets are flooded due to heavy rains
+      - Severe flood conditions are ongoing
+      - A minor flood has been reported
+      - The river is overflowing, causing a flood
+      - Rising water levels might lead to flooding
+      - A dangerous flood is reported in the area
+      - This flood is reaching critical levels
+      - Warnings issued due to flood risk
+      - Moderate flooding is affecting the town
+      - Extreme water accumulation due to floods
+
+  - intent: report_earthquake
+    examples: |
+      - The building is shaking heavily
+      - There is a powerful earthquake
+      - Severe tremors felt
+      - A major quake just happened
+      - Earthquake has caused damage
+      - Intense shaking across the area
+      - Strong tremors are ongoing
+      - The ground is shaking violently
+      - A mild earthquake was just felt
+      - Huge tremors are hitting the city
+      - Buildings are rattling due to the quake
+      - An intense earthquake was just recorded
+      - The quake has left cracks in buildings
+      - Severe quake causing panic in the streets
+      - Massive quake reported near the coast
+      - Slight tremors are noticeable right now
+      - The area is experiencing aftershocks
+      - A low-intensity quake was recorded
+      - The quake's vibrations can be felt everywhere
+      - Earthquake felt across multiple areas
+
+  - intent: report_fire
+    examples: |
+      - There is a high-severity fire
+      - It's a medium-sized fire
+      - The fire is low in intensity
+      - A major fire is raging out of control
+      - Severe fire engulfing the building
+      - Spreading fire in the neighborhood
+      - Small fire has been contained
+      - Fire department responding to the incident
+      - Intense blaze spreading through homes
+      - A small kitchen fire was reported
+      - Massive fire at the factory location
+      - Low-intensity fire in the storage room
+      - Forest fire detected near the town
+      - The fire is under control now
+      - Smoke is coming from a nearby building
+      - An intense fire broke out in the market
+      - Flames are visible from the street
+      - A significant fire threat in the area
+      - There is a large wildfire spreading rapidly
+      - Fire alarms went off in the entire building

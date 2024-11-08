@@ -1,0 +1,17 @@
+version: "3.1"
+stories:
+  - story: Report flood incident and check severity
+    steps:
+      - intent: report_incident
+      - action: action_check_flood_severity
+
+  - story: Report earthquake incident and check severity
+    steps:
+      - intent: report_earthquake
+      - action: action_check_earthquake_severity
+
+  - story: Report fire incident and check severity
+    steps:
+      - intent: report_fire
+      - action: action_check_fire_severity
+

@@ -1,0 +1,16 @@
+version: "3.1"
+rules:
+  - rule: Respond to flood incident report
+    steps:
+      - intent: report_incident
+      - action: action_check_flood_severity
+
+  - rule: Respond to earthquake incident report
+    steps:
+      - intent: report_earthquake
+      - action: action_check_earthquake_severity
+
+  - rule: Respond to fire incident report
+    steps:
+      - intent: report_fire
+      - action: action_check_fire_severity
