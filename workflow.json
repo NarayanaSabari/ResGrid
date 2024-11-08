@@ -1,25 +1,23 @@
 {
-  "createTime": 1729399696758,
-  "updateTime": 1729400949358,
-  "name": "incident_management_workflow",
-  "description": "Workflow to handle incident reporting, resource allocation, severity assessment, and communication",
+  "createTime": 1731027836561,
+  "updateTime": 1731032368624,
+  "name": "ResGrid",
+  "description": "Redgrid is a disaster resoruce managemetn system",
   "version": 1,
   "tasks": [
     {
-      "name": "incident_reporting",
-      "taskReferenceName": "reportIncident",
+      "name": "incident_report",
+      "taskReferenceName": "incident_report_api",
       "inputParameters": {
         "http_request": {
+          "uri": "http://34.67.51.187/incident_reporting/report",
           "method": "POST",
-          "vipAddress": "incident-reporting-service.com",
-          "uri": "74.225.153.30/report",
-          "headers": {
-            "Content-Type": "application/json"
-          },
           "body": {
-            "incident_type": "${workflow.input.incident_type}",
+            "type": "${workflow.input.type}",
             "location": "${workflow.input.location}",
-            "description": "${workflow.input.description}"
+            "description": "${workflow.input.description}",
+            "image": "${workflow.input.image}",
+            "affectedPeople": "${workflow.input.affectedPeople}"
           }
         }
       },
@@ -37,27 +35,48 @@
       "permissive": false
     },
     {
-      "name": "parallel_tasks",
-      "taskReferenceName": "parallelFork",
-      "inputParameters": {},
-      "type": "FORK_JOIN",
+      "name": "severity_assessment",
+      "taskReferenceName": "severity_assessment_api",
+      "inputParameters": {
+        "http_request": {
+          "uri": "http://34.67.51.187/severity_assessment/webhook",
+          "method": "POST",
+          "body": {
+            "data": "${incident_report_api.output.response.body}"
+          }
+        }
+      },
+      "type": "HTTP",
       "decisionCases": {},
       "defaultCase": [],
-      "forkTasks": [
-        [
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "switch",
+      "taskReferenceName": "gateway",
+      "inputParameters": {
+        "switchCaseValue": "${severity_assessment_api.output.response.body.external_service_response.text}"
+      },
+      "type": "SWITCH",
+      "decisionCases": {
+        "low": [
           {
             "name": "resource_allocation",
-            "taskReferenceName": "allocateResources",
+            "taskReferenceName": "resource_allocation_api_low",
             "inputParameters": {
               "http_request": {
+                "uri": "http://34.67.51.187/resource_allocation/low",
                 "method": "POST",
-                "vipAddress": "resource-allocation-service.com",
-                "uri": "74.225.152.243/allocate",
-                "headers": {
-                  "Content-Type": "application/json"
-                },
                 "body": {
-                  "document_id": "${reportIncident.output.body.document_id}"
+                  "type": "${workflow.input.type}"
                 }
               }
             },
@@ -75,22 +94,18 @@
             "permissive": false
           }
         ],
-        [
+        "high": [
           {
-            "name": "severity_assessment",
-            "taskReferenceName": "assessSeverity",
+            "name": "resource_allocation",
+            "taskReferenceName": "resource_allocation_api_high",
             "inputParameters": {
               "http_request": {
+                "uri": "http://34.67.51.187/resource_allocation/high",
                 "method": "POST",
-                "vipAddress": "severity-assessment-service.com",
-                "uri": "74.225.155.167/detect_severity",
-                "headers": {
-                  "Content-Type": "application/json"
-                },
                 "body": {
-                  "incidentData": "${reportIncident.output.body.data}",
-                  "type": "${reportIncident.output.body.type}",
-                  "description": "${reportIncident.output.body.description}"
+                  "type": "${workflow.input.type}",
+                  "affectedPeople": "${workflow.input.affectedPeople}",
+                  "severity": "${severity_assessment_api.output.response.body.external_service_response.text}"
                 }
               }
             },
@@ -108,56 +123,35 @@
             "permissive": false
           }
         ]
-      ],
-      "startDelay": 0,
-      "joinOn": [],
-      "optional": false,
-      "defaultExclusiveJoinTask": [],
-      "asyncComplete": false,
-      "loopOver": [],
-      "onStateChange": {},
-      "permissive": false
-    },
-    {
-      "name": "join_parallel_tasks",
-      "taskReferenceName": "joinFork",
-      "inputParameters": {},
-      "type": "JOIN",
-      "decisionCases": {},
-      "defaultCase": [],
-      "forkTasks": [],
-      "startDelay": 0,
-      "joinOn": [
-        "allocateResources",
-        "assessSeverity"
-      ],
-      "optional": false,
-      "defaultExclusiveJoinTask": [],
-      "asyncComplete": false,
-      "loopOver": [],
-      "onStateChange": {},
-      "permissive": false
-    },
-    {
-      "name": "communication",
-      "taskReferenceName": "communicate",
-      "inputParameters": {
-        "http_request": {
-          "method": "POST",
-          "vipAddress": "communication-service.com",
-          "uri": "40.126.225.166/broadcast",
-          "headers": {
-            "Content-Type": "application/json"
-          },
-          "body": {
-            "services": "${allocateResources.output.body.services}",
-            "severity": "${assessSeverity.output.body.severity}"
-          }
-        }
       },
-      "type": "HTTP",
-      "decisionCases": {},
-      "defaultCase": [],
+      "defaultCase": [
+        {
+          "name": "resource_allocation",
+          "taskReferenceName": "resource_allocation_api_default",
+          "inputParameters": {
+            "http_request": {
+              "uri": "http://34.67.51.187/resource_allocation/medium",
+              "method": "POST",
+              "body": {
+                "type": "${workflow.input.type}",
+                "affectedPeople": "${workflow.input.affectedPeople}"
+              }
+            }
+          },
+          "type": "HTTP",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        }
+      ],
       "forkTasks": [],
       "startDelay": 0,
       "joinOn": [],
@@ -165,16 +159,25 @@
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
       "loopOver": [],
+      "evaluatorType": "value-param",
+      "expression": "switchCaseValue",
       "onStateChange": {},
       "permissive": false
     }
   ],
-  "inputParameters": [],
+  "inputParameters": [
+    "type",
+    "location",
+    "description",
+    "image",
+    "affectedPeople"
+  ],
   "outputParameters": {},
+  "failureWorkflow": "",
   "schemaVersion": 2,
   "restartable": true,
   "workflowStatusListenerEnabled": false,
-  "ownerEmail": "kavinsai88@gmail.com",
+  "ownerEmail": "sabariokg@gmail.com",
   "timeoutPolicy": "ALERT_ONLY",
   "timeoutSeconds": 0,
   "variables": {},
