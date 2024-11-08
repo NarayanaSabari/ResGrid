@@ -49,8 +49,11 @@ def forward_to_external_service(user_message):
 
     try:
         # Send a POST request to the external service with the user message
-        external_response = requests.post(post_url, json={ "sender": "test_user","message": user_message})
-        
+        external_response = requests.post(
+            post_url,
+            json={"sender": "test_user", "message": user_message},
+            headers={"Content-Type": "application/json"}
+        )
         # Check if the request was successful and extract response
         if external_response.status_code == 200:
             return external_response.json()  # Assuming the response includes severity level in JSON format
