@@ -9,7 +9,7 @@ const DisasterDetail = () => {
   const [disaster, setDisaster] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5005/get_disasters`)
+    fetch(`http://34.67.51.187/situation_monitoring/get_disasters`)
       .then((response) => response.json())
       .then((data) => {
         const foundDisaster = data.find((d) => d.id === id);
