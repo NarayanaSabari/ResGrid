@@ -65,6 +65,20 @@ services:
     networks:
       - my_network
 
+  incident_broadcast:
+    build:
+      context: ./services/incident_broadcast
+      dockerfile: Dockerfile
+    ports:
+      - "5006:5000"
+    volumes:
+      - ./services/accountConfig.json:/app/accountConfig.json
+    environment:
+      - CONFIG_FILE=/app/accountConfig.json
+    networks:
+      - my_network
+
+
 networks:
   my_network:
     driver: bridge
