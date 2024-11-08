@@ -91,6 +91,9 @@ To run ResGrid locally, ensure Docker is installed and follow these steps:
 - **Mobile application**:[](#)
 - ![mobile app](https://github.com/user-attachments/assets/b6f039da-daa1-4633-97df-a36ce1b51229)
 
+- **Workflop Diagram**:[](#)
+- <img width="564" alt="Screenshot 2024-11-08 at 8 09 02 AM" src="https://github.com/user-attachments/assets/66a35246-a2b6-4fe0-bf98-56d33d495a2e">
+
 
 ---
 
