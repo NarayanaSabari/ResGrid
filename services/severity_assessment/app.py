@@ -33,7 +33,7 @@ def handle_request():
         data = request.form
         app.logger.info(f"Received form data: {data}")
     document_id = data.get("document_id")
-    message = data.get("message")  # Extract the message content
+    message = data.get("description")  # Extract the message content
 
     # Forward the message to an external service and get the response, including severity level
     external_response = forward_to_external_service(message)
