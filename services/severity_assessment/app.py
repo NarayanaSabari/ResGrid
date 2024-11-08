@@ -116,7 +116,7 @@ db = firestore.client()
 def handle_request():
     # Check if the request contains JSON data
     if request.is_json:
-        data = request.get_json()
+        data = request.get_json()["data"]
         # Log the received data
         app.logger.info(f"Received JSON data: {data}")
     else:
