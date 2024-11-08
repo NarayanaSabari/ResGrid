@@ -164,7 +164,7 @@ def forward_to_external_service(user_message):
 
 def send_response_to_firebase(response, document_id):
     # Extract message and severity level from the external service response
-    severity_level = response.get("text", "No response text")  # Adjust based on response structure
+    severity_level = response[0].get("text", "No response text")  # Adjust based on response structure
 
     # Reference to the specified document in Firestore
     doc_ref = db.collection("Disasters").document(document_id)
