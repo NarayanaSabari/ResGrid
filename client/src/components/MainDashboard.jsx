@@ -16,7 +16,7 @@ const MainDashboard = () => {
   const [resourcesDeployed, setResourcesDeployed] = useState(85); // Example static value
 
   useEffect(() => {
-    fetch("http://localhost:5005/get_disasters")
+    fetch("http://34.67.51.187/situation_monitoring/get_disasters")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
