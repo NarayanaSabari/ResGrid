@@ -136,9 +136,6 @@ def handle_request():
     external_response = forward_to_external_service(message)
     app.logger.info(f"External response data: {external_response}")
 
-    if external_response.get("status") == "failed":
-        return jsonify({"error": "Failed to contact external service", "details": external_response["error"]}), 500
-
     # Send the response and severity level to Firebase
     firebase_response = send_response_to_firebase(external_response, document_id)
 
