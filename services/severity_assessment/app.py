@@ -140,7 +140,7 @@ def handle_request():
     firebase_response = send_response_to_firebase(external_response, document_id)
 
     # Return combined responses back to the client
-    return jsonify({"firebase_response": firebase_response, "external_service_response": external_response})
+    return jsonify({"firebase_response": firebase_response, "external_service_response": external_response[0]})
 
 def forward_to_external_service(user_message):
     post_url = "http://34.150.128.121"  # Replace with the target URL
